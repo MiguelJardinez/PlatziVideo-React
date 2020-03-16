@@ -1,43 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../components/Header';
+import { connect } from 'react-redux';
+import Header from '../components/Header'
 import Search from '../components/Search';
 import Categorias from '../components/Categorias';
 import Carrusel from '../components/Carrusel';
 import ItemCarrusel from '../components/ItemCarrusel'
-import Footer from '../components/Footer'
-import useInitialState from '../hooks/useInitialState'
 
-const API = 'http://localhost:3000/initalState';
+const Home = ({ myList, trends, originals }) => {
 
-
-const Home = () => {
-
-    const initialState = useInitialState(API); 
-    return initialState.length ===0 ? <h1>Loaging</h1> : (
+    return (
         <>
-            <Search />
+            <Header />
+            <Search isHome />
 
-            {initialState.mylist.length > 0 &&
+            {myList.length > 0 &&
 
                 (<Categorias title="Mi lista">
                     <Carrusel>
-                        <ItemCarrusel />
+                        {myList.map(item =>
+                            <ItemCarrusel
+                                key={item.id}
+                                {...item}
+                                isList
+                            />
+                        )}
                     </Carrusel>
                 </Categorias>)
             }
 
             <Categorias title="Tendencias">
                 <Carrusel>
-                    {initialState.trends.map(item =>
-                        <ItemCarrusel key={item.id} {...item}/>
+                    {trends.map(item =>
+                        <ItemCarrusel key={item.id} {...item} />
                     )}
                 </Carrusel>
             </Categorias>
 
             <Categorias title="Originales de PlatziVideo">
                 <Carrusel>
-                    {initialState.originals.map(item =>
-                        <ItemCarrusel key={item.id} {...item}/>
+                    {originals.map(item =>
+                        <ItemCarrusel key={item.id} {...item} />
                     )}
                 </Carrusel>
             </Categorias>
@@ -46,4 +48,14 @@ const Home = () => {
 
 }
 
-export default Home; 
+const mapStateToProps = state => {
+
+    return {
+        myList: state.myList,
+        trends: state.trends,
+        originals: state.originals
+    };
+
+};
+
+export default connect(mapStateToProps, null)(Home);
